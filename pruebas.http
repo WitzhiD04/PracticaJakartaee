@@ -1,0 +1,53 @@
+### Listar
+GET http://localhost:8080/donaciones/api/emergencias
+
+### Crear (debe responder 201 con el id nuevo)
+POST http://localhost:8080/donaciones/api/emergencias
+Content-Type: application/json
+
+{ "nombre": "Avalancha", "ciudad": "Salgar", "meta": 30000000 }
+
+### Buscar una (200)
+GET http://localhost:8080/donaciones/api/emergencias/1
+
+### Buscar una que no existe (404)
+GET http://localhost:8080/donaciones/api/emergencias/99
+
+### Eliminar (204)
+DELETE http://localhost:8080/donaciones/api/emergencias/2
+
+### Filtrar (solo Mocoa)
+GET http://localhost:8080/donaciones/api/emergencias/filtro?ciudad=Mocoa
+
+### Crear sin nombre (400)
+POST http://localhost:8080/donaciones/api/emergencias
+Content-Type: application/json
+
+{ "ciudad": "Salgar", "meta": 30000000 }
+
+### Crear con meta negativa (400)
+POST http://localhost:8080/donaciones/api/emergencias
+Content-Type: application/json
+
+{ "nombre": "Avalancha", "ciudad": "Salgar", "meta": -5 }
+
+### Actualizar la emergencia 1 (200, devuelve la emergencia actualizada)
+PUT http://localhost:8080/donaciones/api/emergencias/1
+Content-Type: application/json
+
+{ "nombre": "Incendio forestal Sierra Nevada", "ciudad": "Santa Marta", "meta": 35000000 }
+
+### Verificar que sí cambió
+GET http://localhost:8080/donaciones/api/emergencias/1
+
+### Actualizar una que no existe (404)
+PUT http://localhost:8080/donaciones/api/emergencias/99
+Content-Type: application/json
+
+{ "nombre": "No existe", "ciudad": "Bogotá", "meta": 1000 }
+
+### Actualizar con datos malos (400)
+PUT http://localhost:8080/donaciones/api/emergencias/1
+Content-Type: application/json
+
+{ "nombre": "", "ciudad": "Santa Marta", "meta": 35000000 }
