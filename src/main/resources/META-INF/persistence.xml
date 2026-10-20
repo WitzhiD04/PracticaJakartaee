@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
+             version="3.2">
+
+    <!-- JTA: las transacciones las maneja el servidor -->
+    <persistence-unit name="donacionesPU" transaction-type="JTA">
+
+        <!-- Nombre JNDI de la base de datos que registraste en GlassFish (PostgreSQL) -->
+        <jta-data-source>jdbc/donaciones</jta-data-source>
+
+        <properties>
+            <!-- Crea las tablas que falten y agrega columnas nuevas, sin borrar los datos -->
+            <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
+            <!-- Muestra en el log de GlassFish el SQL que se ejecuta -->
+            <property name="eclipselink.logging.level.sql" value="FINE"/>
+            <property name="eclipselink.logging.parameters" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>

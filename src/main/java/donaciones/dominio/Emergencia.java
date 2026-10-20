@@ -1,10 +1,19 @@
 package donaciones.dominio;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "emergencias")
 public class Emergencia {
 
+    @Id // llave primaria
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // la bd crea el id
     private Long id;
+    @Column(nullable = false, length = 150)
     private String nombre;
+    @Column(nullable = false, length = 100)
     private String ciudad;
+    @Column(nullable = false)
     private Long meta; // dinero
 
     public Emergencia() {

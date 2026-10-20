@@ -3,60 +3,57 @@ package donaciones.infraestructura;
 import donaciones.dominio.Emergencia;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
 import java.util.*;
 
 @ApplicationScoped   // UN solo objeto para toda la aplicación
 public class EmergenciaRepositorio {
 
-    private final Map<Long, Emergencia> datos = new HashMap<Long, Emergencia>();
-    private Long secuencia = 0L; // Para generar los id
+    // El servidor te entrega el EntityManager conectado a la base de datos
+    @PersistenceContext(unitName = "donacionesPU")
+    EntityManager em;
 
-
-    // El servidor lo llama una vez, justo después de crear el objeto
-    @PostConstruct
-    void cargarDatosEjemplo() {
-        guardar(new Emergencia("Inundación en Mocoa", "Mocoa", 50000000L));
-        guardar(new Emergencia("Incendio forestal", "Santa Marta", 20000000L));
-    }
 
     public synchronized List<Emergencia> listar() {
-        return new ArrayList<Emergencia>(datos.values());
+        return em.createQuery("select e from Emergencia e ORDER BY e.id ASC", Emergencia.class).getResultList();
     }
 
+    @Transactional
     public synchronized Emergencia guardar(Emergencia emergencia) {
-        if (emergencia.getId() == null) {
-            emergencia.setId(secuencia);
-            secuencia++;
-        }
-        datos.put(emergencia.getId(), emergencia);
+        em.persist(emergencia);
         return emergencia;
     }
 
     public synchronized Optional<Emergencia> buscar(Long id) {
-        return Optional.ofNullable(datos.get(id));
+        return Optional.ofNullable(em.find(Emergencia.class, id));
     }
 
+    @Transactional
     public synchronized Boolean eliminar(Long id) {
-        return datos.remove(id) != null;
+        if (em.contains(em.find(Emergencia.class, id))) {
+            em.remove(em.find(Emergencia.class, id));
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public synchronized Boolean actualizar(Emergencia emergencia) {
-        if (datos.get(emergencia.getId()) == null) {
-            return false;
-        } else {
-            datos.put(emergencia.getId(), emergencia) ;
+
+        if (em.contains(em.find(Emergencia.class, emergencia.getId()))) {
+            em.merge(emergencia);
             return true;
+        } else {
+            return false;
         }
+
     }
 
     public synchronized List<Emergencia> filtrar(String ciudad) {
-        List<Emergencia> resultado = new ArrayList<Emergencia>();
-        for (Emergencia emergencia : datos.values()) {
-            if (emergencia.getCiudad().equals(ciudad)) {
-                resultado.add(emergencia);
-            }
-        }
-        return resultado;
+
+        return em.createQuery("select e from Emergencia e WHERE e.ciudad = :ciudad ORDER BY e.id ASC",Emergencia.class ).getResultList();
     }
 }
