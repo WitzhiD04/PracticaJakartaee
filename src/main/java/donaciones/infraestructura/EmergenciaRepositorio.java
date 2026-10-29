@@ -17,43 +17,44 @@ public class EmergenciaRepositorio {
     EntityManager em;
 
 
-    public synchronized List<Emergencia> listar() {
+    public List<Emergencia> listar() {
         return em.createQuery("select e from Emergencia e ORDER BY e.id ASC", Emergencia.class).getResultList();
     }
 
     @Transactional
-    public synchronized Emergencia guardar(Emergencia emergencia) {
+    public Emergencia guardar(Emergencia emergencia) {
         em.persist(emergencia);
         return emergencia;
     }
 
-    public synchronized Optional<Emergencia> buscar(Long id) {
+    public Optional<Emergencia> buscar(Long id) {
         return Optional.ofNullable(em.find(Emergencia.class, id));
     }
 
     @Transactional
-    public synchronized Boolean eliminar(Long id) {
-        if (em.contains(em.find(Emergencia.class, id))) {
-            em.remove(em.find(Emergencia.class, id));
-            return true;
-        } else {
+    public Boolean eliminar(Long id) {
+        Emergencia e = em.find(Emergencia.class, id);
+        if (e == null) {
             return false;
         }
+        em.remove(e);
+        return true;
     }
 
-    public synchronized Boolean actualizar(Emergencia emergencia) {
+    @Transactional
+    public Boolean actualizar(Emergencia emergencia) {
 
-        if (em.contains(em.find(Emergencia.class, emergencia.getId()))) {
-            em.merge(emergencia);
-            return true;
-        } else {
+        if (em.find(Emergencia.class, emergencia.getId()) == null) {
             return false;
         }
+        em.merge(emergencia);
+        return true;
 
     }
 
-    public synchronized List<Emergencia> filtrar(String ciudad) {
+    public List<Emergencia> filtrar(String ciudad) {
 
-        return em.createQuery("select e from Emergencia e WHERE e.ciudad = :ciudad ORDER BY e.id ASC",Emergencia.class ).getResultList();
+        return em.createQuery("select e from Emergencia e WHERE e.ciudad = :ciudad ORDER BY e.id ASC",Emergencia.class ).setParameter("ciudad", ciudad)
+                .getResultList();
     }
 }

@@ -37,12 +37,12 @@ public class EmergenciaResource {
         }
     }
 
-    public void validar(Emergencia emergencia) {
+    private void validar(Emergencia emergencia) {
         if (emergencia.getNombre() == null || emergencia.getNombre().isEmpty()) {
             throw new BadRequestException("El nombre es obligatorio");
         } else if (emergencia.getCiudad() == null || emergencia.getCiudad().isEmpty()) {
             throw new BadRequestException("La ciudad es obligatoria");
-        } else if (emergencia.getMeta() == null || emergencia.getMeta() < 0) {
+        } else if (emergencia.getMeta() == null || emergencia.getMeta() <= 0) {
             throw new BadRequestException("La meta es obligatoria o no puede ser negativa");
         }
     }
